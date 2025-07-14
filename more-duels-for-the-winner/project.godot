@@ -11,5 +11,14 @@ config_version=5
 [application]
 
 config/name="More Duels For the Winner"
+run/main_scene="uid://rrqxdjj70leg"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
+
+[display]
+
+window/vsync/vsync_mode=0
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
