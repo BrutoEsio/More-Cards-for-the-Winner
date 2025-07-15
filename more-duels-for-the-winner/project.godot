@@ -19,6 +19,12 @@ config/icon="res://icon.svg"
 
 window/vsync/vsync_mode=0
 
+[layer_names]
+
+2d_physics/layer_1="Cartas"
+2d_physics/layer_2="Cartas Slot"
+2d_physics/layer_3="Deck"
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0

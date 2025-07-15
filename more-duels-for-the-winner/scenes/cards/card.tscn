@@ -1,22 +1,21 @@
 [gd_scene load_steps=4 format=3 uid="uid://ddbkrkjdnfpqx"]
 
-[ext_resource type="Texture2D" uid="uid://cqobsfi51yphe" path="res://assets/cards/witch/witch1.png" id="1_dd2wi"]
 [ext_resource type="Script" uid="uid://dhu3rwh1e34p2" path="res://Card.gd" id="1_hael8"]
+[ext_resource type="Texture2D" uid="uid://da5jd1l65x2it" path="res://assets/cards/all_png/Cartas1.png" id="3_21rx5"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_dd2wi"]
-size = Vector2(146, 240)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hael8"]
+size = Vector2(48, 80)
 
 [node name="Card" type="Node2D"]
 script = ExtResource("1_hael8")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(3, 3)
-texture = ExtResource("1_dd2wi")
+texture = ExtResource("3_21rx5")
 
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-shape = SubResource("RectangleShape2D_dd2wi")
+shape = SubResource("RectangleShape2D_hael8")
 
 [connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
 [connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]
