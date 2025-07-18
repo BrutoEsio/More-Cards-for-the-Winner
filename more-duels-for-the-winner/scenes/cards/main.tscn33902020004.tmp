@@ -1,6 +1,8 @@
-[gd_scene load_steps=17 format=4 uid="uid://rrqxdjj70leg"]
+[gd_scene load_steps=16 format=4 uid="uid://rrqxdjj70leg"]
 
+[ext_resource type="PackedScene" uid="uid://ddbkrkjdnfpqx" path="res://scenes/cards/card.tscn" id="1_f1cb4"]
 [ext_resource type="Script" uid="uid://yh5ogp3ymyxr" path="res://CardManager.gd" id="1_rw2pn"]
+[ext_resource type="PackedScene" uid="uid://c1j1iklvumsqk" path="res://scenes/cards/card_slot.tscn" id="3_dihvh"]
 [ext_resource type="Script" uid="uid://cevgkfgrfkuu1" path="res://player_hand.gd" id="4_6swgk"]
 [ext_resource type="Script" uid="uid://3xt2lfbohf2a" path="res://scenes/cards/deck.gd" id="4_dihvh"]
 [ext_resource type="Texture2D" uid="uid://hr14vguiwv74" path="res://assets/deck.png" id="4_rw2pn"]
@@ -9,10 +11,7 @@
 [ext_resource type="Script" uid="uid://cwf2opbcj7wmd" path="res://tile_set_script/card_grid.gd" id="8_w1ybe"]
 [ext_resource type="Script" uid="uid://ck4p3yb1ivm7x" path="res://tile_set_script/play_area.gd" id="9_fkncr"]
 [ext_resource type="Script" uid="uid://8u2vxhhprdfq" path="res://tile_set_script/tile_highlight.gd" id="11_3qwyf"]
-[ext_resource type="Script" uid="uid://b08nudrc50yx3" path="res://scenes/cards/card_status.gd" id="11_88q4g"]
 [ext_resource type="Script" uid="uid://cq7qa8ama6g0d" path="res://tile_set_script/unit_mover.gd" id="12_88q4g"]
-[ext_resource type="Script" uid="uid://dgxs687ujlguw" path="res://scenes/cards/player_data.gd" id="17_m0dwi"]
-[ext_resource type="Script" uid="uid://d8pryw20g0wg" path="res://scenes/cards/button.gd" id="19_jdv1p"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a3wr0"]
 size = Vector2(56, 80)
@@ -31,13 +30,22 @@ sources/0 = SubResource("TileSetAtlasSource_6swgk")
 [node name="CardManager" type="Node2D" parent="."]
 script = ExtResource("1_rw2pn")
 
+[node name="Card" parent="CardManager" instance=ExtResource("1_f1cb4")]
+
+[node name="CardSlot" parent="." instance=ExtResource("3_dihvh")]
+visible = false
+position = Vector2(45, 44)
+
+[node name="CardSlot2" parent="." instance=ExtResource("3_dihvh")]
+visible = false
+position = Vector2(158, 42)
+
 [node name="Player_Hand" type="Node2D" parent="."]
 script = ExtResource("4_6swgk")
 
-[node name="Deck" type="Node2D" parent="." node_paths=PackedStringArray("card_data")]
+[node name="Deck" type="Node2D" parent="."]
 position = Vector2(1202, 636)
 script = ExtResource("4_dihvh")
-card_data = NodePath("../Card_data")
 
 [node name="Sprite2D" type="Sprite2D" parent="Deck"]
 texture = ExtResource("4_rw2pn")
@@ -83,26 +91,3 @@ highlight_layer = NodePath("../highlight")
 [node name="Node" type="Node" parent="." node_paths=PackedStringArray("play_areas")]
 script = ExtResource("12_88q4g")
 play_areas = [NodePath("../Tileset/Field")]
-
-[node name="Card_data" type="Node" parent="."]
-script = ExtResource("11_88q4g")
-
-[node name="player_mechanic" type="Node" parent="."]
-script = ExtResource("17_m0dwi")
-
-[node name="RichTextLabel2" type="RichTextLabel" parent="player_mechanic"]
-offset_top = 436.0
-offset_right = 98.0
-offset_bottom = 476.0
-fit_content = true
-vertical_alignment = 1
-
-[node name="end_turn" type="Button" parent="."]
-offset_left = 1161.0
-offset_top = 545.0
-offset_right = 1239.0
-offset_bottom = 576.0
-text = "End Turn"
-script = ExtResource("19_jdv1p")
-
-[node name="battle_manager" type="Node2D" parent="."]

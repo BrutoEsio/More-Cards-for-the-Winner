@@ -7,11 +7,17 @@ var screen_size
 var card_being_dragged
 var is_hovering_on_card
 var player_hand_reference
+var deck
+
+
 
 func _ready() -> void:
 	screen_size = get_viewport_rect().size
 	player_hand_reference = $"../Player_Hand"
 	$"../InputManager".connect("left_mouse_button_released",on_left_click_released)
+	deck = $"../Deck"
+	
+	
 
 func _process(delta: float) -> void:
 	if card_being_dragged:
@@ -26,13 +32,80 @@ func start_drag(card):
 	
 func finish_drag():
 	card_being_dragged.scale = Vector2(1.05 , 1.05)
-	var card_slot_found = raycast_check_for_card_slot()
-	if card_slot_found and not card_slot_found.card_in_slot :
-		player_hand_reference.remove_card_from_hand(card_being_dragged)
-		card_being_dragged.position = card_slot_found.position
-		card_being_dragged.get_node("Area2D/CollisionShape2D").disabled = true
+	var tile_existe = $"../Node"._get_play_area_for_position(get_global_mouse_position())
+	var posicao_da_carta = $"../Tileset/Field".get_tile_from_global(get_global_mouse_position())
+	
+	print(deck.player_general_reference)
+	#CARTAS QUE ESTAO NA MAO
+	
+	if tile_existe > -1 and card_being_dragged.card_in_slot == false:
+		if $"../Tileset/Field/Field_grid".is_tile_occupied(posicao_da_carta) == false :
+			if deck.player_general_reference.real_position.x == posicao_da_carta.x and card_being_dragged.cost <= deck.energy :
+				if deck.player_general_reference.real_position.y == posicao_da_carta.y + 1 or deck.player_general_reference.real_position.y == posicao_da_carta.y -1 :
+					player_hand_reference.remove_card_from_hand(card_being_dragged)
+					$"../Node"._move_card( card_being_dragged,$"../Tileset/Field", posicao_da_carta)
+					card_being_dragged.card_in_slot = true
+					card_being_dragged.real_position = posicao_da_carta
+					$"../Deck".energy = $"../Deck".energy - card_being_dragged.cost
+				else : 
+					player_hand_reference.add_card_to_hand(card_being_dragged)
+			
+			elif deck.player_general_reference.real_position.y == posicao_da_carta.y and card_being_dragged.cost <= deck.energy  :
+				if deck.player_general_reference.real_position.x == posicao_da_carta.x + 1 or deck.player_general_reference.real_position.x == posicao_da_carta.x -1 :
+					player_hand_reference.remove_card_from_hand(card_being_dragged)
+					$"../Node"._move_card( card_being_dragged,$"../Tileset/Field", posicao_da_carta)
+					card_being_dragged.card_in_slot = true
+					card_being_dragged.real_position = posicao_da_carta
+					$"../Deck".energy = $"../Deck".energy - card_being_dragged.cost
+				else : 
+					player_hand_reference.add_card_to_hand(card_being_dragged)
+			
+			else  :
+				player_hand_reference.add_card_to_hand(card_being_dragged)
+			
+		else :
+			player_hand_reference.add_card_to_hand(card_being_dragged)
 		
-		card_slot_found.card_in_slot = true
+	#PARA CARTAS QUE NO CAMPO
+	if card_being_dragged.this_card_can_move == false and card_being_dragged.card_in_slot == true :
+		card_being_dragged.reset_after_dragging($"../Tileset/Field".get_global_from_tile(card_being_dragged.real_position))
+		card_being_dragged = null
+		return
+	
+	elif card_being_dragged.card_in_slot == true and tile_existe == -1 :
+		card_being_dragged.reset_after_dragging($"../Tileset/Field".get_global_from_tile(card_being_dragged.real_position))
+		print(card_being_dragged.real_position)
+	
+	elif card_being_dragged.card_in_slot == true and tile_existe > -1 :
+		if $"../Tileset/Field/Field_grid".is_tile_occupied(posicao_da_carta) == true :
+			card_being_dragged.reset_after_dragging($"../Tileset/Field".get_global_from_tile(card_being_dragged.real_position))
+		
+		elif posicao_da_carta.x == card_being_dragged.real_position.x  :
+			
+			if posicao_da_carta.y == card_being_dragged.real_position.y + 1 or posicao_da_carta.y == card_being_dragged.real_position.y -1 :
+				$"../Tileset/Field/Field_grid".remove_card(card_being_dragged.real_position)
+				
+				$"../Node"._move_card( card_being_dragged,$"../Tileset/Field", posicao_da_carta)
+				card_being_dragged.real_position = posicao_da_carta
+				card_being_dragged.this_card_can_move = false
+			else : 
+				card_being_dragged.reset_after_dragging($"../Tileset/Field".get_global_from_tile(card_being_dragged.real_position))
+				print('resetou')
+				
+				
+		elif posicao_da_carta.y == card_being_dragged.real_position.y  :
+			if posicao_da_carta.x == card_being_dragged.real_position.x + 1 or posicao_da_carta.x == card_being_dragged.real_position.x -1 :
+				$"../Tileset/Field/Field_grid".remove_card(card_being_dragged.real_position)
+				
+				$"../Node"._move_card( card_being_dragged,$"../Tileset/Field", posicao_da_carta)
+				card_being_dragged.real_position = posicao_da_carta
+				card_being_dragged.this_card_can_move = false
+			else : 
+				card_being_dragged.reset_after_dragging($"../Tileset/Field".get_global_from_tile(card_being_dragged.real_position))
+				print('resetou')
+		else : 
+			card_being_dragged.reset_after_dragging($"../Tileset/Field".get_global_from_tile(card_being_dragged.real_position))
+			print('resetou')
 	else :
 		player_hand_reference.add_card_to_hand(card_being_dragged)
 	card_being_dragged = null
@@ -65,17 +138,6 @@ func highlight_card(card, hovered):
 		card.scale = Vector2(1 , 1)
 		card.z_index = 1
 
-func raycast_check_for_card_slot():
-	var space_state = get_world_2d().direct_space_state
-	var parameters = PhysicsPointQueryParameters2D.new()
-	parameters.position = get_global_mouse_position()
-	parameters.collide_with_areas = true
-	parameters.collision_mask = COLLISION_MASK_CARD_SLOT
-	var result = space_state.intersect_point(parameters)
-	if result.size() > 0:
-		return result[0].collider.get_parent()
-	return null
-
 
 func raycast_check_for_card():
 	var space_state = get_world_2d().direct_space_state
@@ -101,6 +163,7 @@ func get_card_with_highest_z_index(cards):
 			
 	return highest_z_card
 
+#Modificar Aqui para se a carta pode mover ou nao
 func on_left_click_released() :
-	if card_being_dragged:
-				finish_drag()
+	if card_being_dragged : 
+		finish_drag()
